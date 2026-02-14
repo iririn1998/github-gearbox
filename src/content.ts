@@ -1,12 +1,14 @@
 import type { Feature } from "./types";
 import { taskListLabelFeature } from "./features/taskListLabel";
+import { reviewCopyButtonFeature } from "./features/reviewCopyButton";
 import "./features/taskListLabel/styles.css";
+import "./features/reviewCopyButton/styles.css";
 
 /**
  * 登録された全機能のリスト
  * 新しい機能を追加する際はここにインポートして追加する
  */
-const features: Feature[] = [taskListLabelFeature];
+const features: Feature[] = [taskListLabelFeature, reviewCopyButtonFeature];
 
 /**
  * 現在有効化されている機能のセット
@@ -16,7 +18,7 @@ const activeFeatures = new Set<string>();
 /**
  * 全機能を初期化する
  */
-function initAllFeatures(): void {
+const initAllFeatures = (): void => {
   for (const feature of features) {
     try {
       feature.init();
@@ -26,12 +28,12 @@ function initAllFeatures(): void {
       console.error(`[GitHub Gearbox] ${feature.name} の初期化に失敗しました:`, error);
     }
   }
-}
+};
 
 /**
  * 全機能をクリーンアップする
  */
-function destroyAllFeatures(): void {
+const destroyAllFeatures = (): void => {
   for (const feature of features) {
     if (activeFeatures.has(feature.id)) {
       try {
@@ -42,7 +44,7 @@ function destroyAllFeatures(): void {
       }
     }
   }
-}
+};
 
 // 初期化実行
 initAllFeatures();

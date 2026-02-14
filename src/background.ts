@@ -16,6 +16,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     chrome.storage.local.set({
       features: {
         "task-list-label": { enabled: true },
+        "review-copy-button": { enabled: true },
       },
     });
   }

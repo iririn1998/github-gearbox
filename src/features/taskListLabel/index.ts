@@ -21,7 +21,7 @@ let idCounter = 0;
  *     <label for="gh-gearbox-task-0" class="gh-gearbox-task-label"> テキスト</label>
  *   </li>
  */
-function wrapWithLabel(listItem: HTMLElement): void {
+const wrapWithLabel = (listItem: HTMLElement): void => {
   // 既に処理済みならスキップ
   if (listItem.hasAttribute(PROCESSED_ATTR)) {
     return;
@@ -70,22 +70,22 @@ function wrapWithLabel(listItem: HTMLElement): void {
 
   // 処理済みマークを付与
   listItem.setAttribute(PROCESSED_ATTR, "true");
-}
+};
 
 /**
  * ページ内の全タスクリストアイテムを処理する
  */
-function processAllTaskListItems(): void {
+const processAllTaskListItems = (): void => {
   const items = document.querySelectorAll<HTMLElement>(
     "li.task-list-item:not([" + PROCESSED_ATTR + "])",
   );
   items.forEach(wrapWithLabel);
-}
+};
 
 /**
  * MutationObserverを開始して、動的に追加されるタスクリストにも対応する
  */
-function startObserver(): void {
+const startObserver = (): void => {
   if (observer) {
     observer.disconnect();
   }
@@ -125,12 +125,12 @@ function startObserver(): void {
     childList: true,
     subtree: true,
   });
-}
+};
 
 /**
  * クリーンアップ: 付与したlabel・ID・属性を全て除去する
  */
-function cleanup(): void {
+const cleanup = (): void => {
   // Observerを停止
   if (observer) {
     observer.disconnect();
@@ -159,7 +159,7 @@ function cleanup(): void {
   });
 
   idCounter = 0;
-}
+};
 
 /**
  * タスクリストLabel機能
