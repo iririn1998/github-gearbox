@@ -18,7 +18,7 @@ const activeFeatures = new Set<string>();
 /**
  * 全機能を初期化する
  */
-function initAllFeatures(): void {
+const initAllFeatures = (): void => {
   for (const feature of features) {
     try {
       feature.init();
@@ -28,12 +28,12 @@ function initAllFeatures(): void {
       console.error(`[GitHub Gearbox] ${feature.name} の初期化に失敗しました:`, error);
     }
   }
-}
+};
 
 /**
  * 全機能をクリーンアップする
  */
-function destroyAllFeatures(): void {
+const destroyAllFeatures = (): void => {
   for (const feature of features) {
     if (activeFeatures.has(feature.id)) {
       try {
@@ -44,7 +44,7 @@ function destroyAllFeatures(): void {
       }
     }
   }
-}
+};
 
 // 初期化実行
 initAllFeatures();

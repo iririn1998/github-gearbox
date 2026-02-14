@@ -18,7 +18,7 @@ let observer: MutationObserver | null = null;
  * - Files changed タブ: .file[data-tagsearch-path] > table > tr > td > ... > .review-comment
  * - Conversation タブ: コメントスレッド内にファイルリンクがある
  */
-function getFileName(commentElement: HTMLElement): string {
+const getFileName = (commentElement: HTMLElement): string => {
   // 1. 祖先の .file 要素から data-tagsearch-path を取得（Files changed タブ）
   const fileWrapper = commentElement.closest<HTMLElement>("[data-tagsearch-path]");
   if (fileWrapper) {
@@ -34,9 +34,7 @@ function getFileName(commentElement: HTMLElement): string {
   // 3. .file-header 内の a[title] からファイル名を取得
   const fileElement = commentElement.closest<HTMLElement>(".file");
   if (fileElement) {
-    const fileLink = fileElement.querySelector<HTMLElement>(
-      ".file-header a[title], .file-info a",
-    );
+    const fileLink = fileElement.querySelector<HTMLElement>(".file-header a[title], .file-info a");
     if (fileLink) {
       return fileLink.getAttribute("title") ?? fileLink.textContent?.trim() ?? "";
     }
@@ -48,16 +46,14 @@ function getFileName(commentElement: HTMLElement): string {
     ".js-resolvable-timeline-thread-container",
   );
   if (threadContainer) {
-    const fileLink = threadContainer.querySelector<HTMLAnchorElement>(
-      "a[href*='/files']",
-    );
+    const fileLink = threadContainer.querySelector<HTMLAnchorElement>("a[href*='/files']");
     if (fileLink) {
       return fileLink.textContent?.trim() ?? "";
     }
   }
 
   return "";
-}
+};
 
 /**
  * レビューコメントから対象行番号を取得する
@@ -67,7 +63,7 @@ function getFileName(commentElement: HTMLElement): string {
  *   (例: "+91", "+92")
  * - 単一行の場合は "Comment on line +91" のようなテキスト
  */
-function getLineNumber(commentElement: HTMLElement): string {
+const getLineNumber = (commentElement: HTMLElement): string => {
   // コメントスレッドコンテナを取得
   const threadContainer =
     commentElement.closest<HTMLElement>(".js-resolvable-timeline-thread-container") ??
@@ -127,12 +123,12 @@ function getLineNumber(commentElement: HTMLElement): string {
   }
 
   return "";
-}
+};
 
 /**
  * レビューコメントの本文テキストを取得する
  */
-function getCommentBody(commentElement: HTMLElement): string {
+const getCommentBody = (commentElement: HTMLElement): string => {
   // .comment-body 内のテキストを取得（GitHub はレンダリング済みHTMLを .comment-body 内に配置）
   const commentBody = commentElement.querySelector<HTMLElement>(".comment-body");
   if (commentBody) {
@@ -146,12 +142,12 @@ function getCommentBody(commentElement: HTMLElement): string {
   }
 
   return "";
-}
+};
 
 /**
  * コピー用テキストをフォーマットする
  */
-function formatCopyText(fileName: string, lineNumber: string, comment: string): string {
+const formatCopyText = (fileName: string, lineNumber: string, comment: string): string => {
   const parts: string[] = [];
 
   if (fileName) {
@@ -167,12 +163,12 @@ function formatCopyText(fileName: string, lineNumber: string, comment: string): 
   }
 
   return parts.join("\n");
-}
+};
 
 /**
  * コピーボタンを作成する
  */
-function createCopyButton(commentElement: HTMLElement): HTMLButtonElement {
+const createCopyButton = (commentElement: HTMLElement): HTMLButtonElement => {
   const button = document.createElement("button");
   button.className = "gh-gearbox-copy-btn";
   button.type = "button";
@@ -206,12 +202,12 @@ function createCopyButton(commentElement: HTMLElement): HTMLButtonElement {
   });
 
   return button;
-}
+};
 
 /**
  * 単一のレビューコメントにコピーボタンを追加する
  */
-function addCopyButtonToComment(commentElement: HTMLElement): void {
+const addCopyButtonToComment = (commentElement: HTMLElement): void => {
   // 既に処理済みならスキップ
   if (commentElement.hasAttribute(PROCESSED_ATTR)) {
     return;
@@ -219,9 +215,7 @@ function addCopyButtonToComment(commentElement: HTMLElement): void {
 
   // コメントヘッダーのアクション領域を探す
   // .timeline-comment-actions は .review-comment 直下のヘッダー内にある
-  const headerActions = commentElement.querySelector<HTMLElement>(
-    ".timeline-comment-actions",
-  );
+  const headerActions = commentElement.querySelector<HTMLElement>(".timeline-comment-actions");
 
   if (headerActions) {
     const button = createCopyButton(commentElement);
@@ -231,7 +225,7 @@ function addCopyButtonToComment(commentElement: HTMLElement): void {
 
   // 処理済みマークを付与
   commentElement.setAttribute(PROCESSED_ATTR, "true");
-}
+};
 
 /**
  * ページ内の全レビューコメントにコピーボタンを追加する
@@ -240,17 +234,17 @@ function addCopyButtonToComment(commentElement: HTMLElement): void {
  * .js-comment-container は .review-comment を内包する親要素であり、
  * 両方をターゲットにするとボタンが2重に挿入されるため除外する。
  */
-function processAllReviewComments(): void {
+const processAllReviewComments = (): void => {
   const comments = document.querySelectorAll<HTMLElement>(
     `.review-comment:not([${PROCESSED_ATTR}])`,
   );
   comments.forEach(addCopyButtonToComment);
-}
+};
 
 /**
  * MutationObserver を開始して動的に追加されるコメントにも対応する
  */
-function startObserver(): void {
+const startObserver = (): void => {
   if (observer) {
     observer.disconnect();
   }
@@ -284,12 +278,12 @@ function startObserver(): void {
     childList: true,
     subtree: true,
   });
-}
+};
 
 /**
  * クリーンアップ: 追加したコピーボタンと属性を全て除去する
  */
-function cleanup(): void {
+const cleanup = (): void => {
   // Observer を停止
   if (observer) {
     observer.disconnect();
@@ -303,7 +297,7 @@ function cleanup(): void {
   // 処理済みマークを除去
   const processedElements = document.querySelectorAll<HTMLElement>(`[${PROCESSED_ATTR}]`);
   processedElements.forEach((el) => el.removeAttribute(PROCESSED_ATTR));
-}
+};
 
 /**
  * レビューコメント コピーボタン機能

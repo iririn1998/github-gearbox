@@ -4,21 +4,21 @@
  * 機能のON/OFF切り替えUIを管理する
  */
 
-interface FeatureSettings {
+type FeatureSettings = {
   [featureId: string]: {
     enabled: boolean;
   };
-}
+};
 
 /**
  * 個別の機能トグルを設定する共通ヘルパー
  */
-function setupFeatureToggle(
+const setupFeatureToggle = (
   features: FeatureSettings,
   featureId: string,
   toggleElementId: string,
   defaultEnabled: boolean,
-): void {
+): void => {
   const toggle = document.getElementById(toggleElementId) as HTMLInputElement | null;
   if (!toggle) return;
 
@@ -41,9 +41,9 @@ function setupFeatureToggle(
       });
     }
   });
-}
+};
 
-async function init(): Promise<void> {
+const init = async (): Promise<void> => {
   // 保存された設定を読み込み
   const result = await chrome.storage.local.get("features");
   const features: FeatureSettings = (result.features as FeatureSettings) ?? {
@@ -54,6 +54,6 @@ async function init(): Promise<void> {
   // 各機能のトグルを設定
   setupFeatureToggle(features, "task-list-label", "toggle-task-list-label", true);
   setupFeatureToggle(features, "review-copy-button", "toggle-review-copy-button", true);
-}
+};
 
 init();

@@ -15,7 +15,7 @@ import {
  * publicディレクトリの内容をdistにコピーし、
  * popup HTMLを正しい位置に移動するプラグイン
  */
-function chromeExtensionPlugin() {
+const chromeExtensionPlugin = () => {
   return {
     name: "chrome-extension",
     closeBundle() {
@@ -23,7 +23,7 @@ function chromeExtensionPlugin() {
 
       // 1. publicディレクトリの内容をdistにコピー
       const publicDir = resolve(__dirname, "public");
-      function copyDir(src: string, dest: string) {
+      const copyDir = (src: string, dest: string): void => {
         mkdirSync(dest, { recursive: true });
         for (const entry of readdirSync(src)) {
           const srcPath = resolve(src, entry);
@@ -34,7 +34,7 @@ function chromeExtensionPlugin() {
             copyFileSync(srcPath, destPath);
           }
         }
-      }
+      };
       try {
         copyDir(publicDir, distDir);
       } catch {
@@ -59,7 +59,7 @@ function chromeExtensionPlugin() {
       }
     },
   };
-}
+};
 
 export default defineConfig({
   // Chrome拡張ではアセットの参照を相対パスにする必要がある
