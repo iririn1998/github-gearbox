@@ -18,9 +18,7 @@ async function init(): Promise<void> {
   };
 
   // タスクリストLabel機能のトグル
-  const toggle = document.getElementById(
-    "toggle-task-list-label"
-  ) as HTMLInputElement | null;
+  const toggle = document.getElementById("toggle-task-list-label") as HTMLInputElement | null;
 
   if (toggle) {
     toggle.checked = features["task-list-label"]?.enabled ?? true;

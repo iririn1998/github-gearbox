@@ -23,10 +23,7 @@ function initAllFeatures(): void {
       activeFeatures.add(feature.id);
       console.log(`[GitHub Gearbox] ${feature.name} を有効化しました`);
     } catch (error) {
-      console.error(
-        `[GitHub Gearbox] ${feature.name} の初期化に失敗しました:`,
-        error
-      );
+      console.error(`[GitHub Gearbox] ${feature.name} の初期化に失敗しました:`, error);
     }
   }
 }
@@ -41,10 +38,7 @@ function destroyAllFeatures(): void {
         feature.destroy();
         activeFeatures.delete(feature.id);
       } catch (error) {
-        console.error(
-          `[GitHub Gearbox] ${feature.name} のクリーンアップに失敗しました:`,
-          error
-        );
+        console.error(`[GitHub Gearbox] ${feature.name} のクリーンアップに失敗しました:`, error);
       }
     }
   }
@@ -71,10 +65,7 @@ chrome.runtime.onMessage.addListener((message) => {
         activeFeatures.add(feature.id);
         console.log(`[GitHub Gearbox] ${feature.name} を有効化しました`);
       } catch (error) {
-        console.error(
-          `[GitHub Gearbox] ${feature.name} の有効化に失敗しました:`,
-          error
-        );
+        console.error(`[GitHub Gearbox] ${feature.name} の有効化に失敗しました:`, error);
       }
     } else if (!message.enabled && activeFeatures.has(feature.id)) {
       try {
@@ -82,10 +73,7 @@ chrome.runtime.onMessage.addListener((message) => {
         activeFeatures.delete(feature.id);
         console.log(`[GitHub Gearbox] ${feature.name} を無効化しました`);
       } catch (error) {
-        console.error(
-          `[GitHub Gearbox] ${feature.name} の無効化に失敗しました:`,
-          error
-        );
+        console.error(`[GitHub Gearbox] ${feature.name} の無効化に失敗しました:`, error);
       }
     }
   }

@@ -7,10 +7,16 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "tsc --noEmit && vite build",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "lint": "oxlint src/",
+    "lint:fix": "oxlint --fix src/",
+    "format": "oxfmt src/ vite.config.ts",
+    "format:check": "oxfmt --check src/ vite.config.ts"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.304",
+    "oxfmt": "^0.32.0",
+    "oxlint": "^1.47.0",
     "typescript": "^5.9.3",
     "vite": "^6.3.5"
   }
