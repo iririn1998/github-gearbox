@@ -1,12 +1,14 @@
 import type { Feature } from "./types";
 import { taskListLabelFeature } from "./features/taskListLabel";
+import { reviewCopyButtonFeature } from "./features/reviewCopyButton";
 import "./features/taskListLabel/styles.css";
+import "./features/reviewCopyButton/styles.css";
 
 /**
  * 登録された全機能のリスト
  * 新しい機能を追加する際はここにインポートして追加する
  */
-const features: Feature[] = [taskListLabelFeature];
+const features: Feature[] = [taskListLabelFeature, reviewCopyButtonFeature];
 
 /**
  * 現在有効化されている機能のセット

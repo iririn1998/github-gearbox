@@ -1,0 +1,100 @@
+/**
+ * レビューコメント コピーボタンのスタイル
+ * GitHub の既存UIに馴染むデザイン
+ */
+
+/* コピーボタン基本スタイル */
+.gh-gearbox-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  margin: 0 2px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fgColor-muted, #656d76);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+  vertical-align: middle;
+}
+
+/* ホバー時 */
+.gh-gearbox-copy-btn:hover {
+  color: var(--fgColor-default, #1f2328);
+  background-color: var(--bgColor-neutral-muted, rgba(175, 184, 193, 0.2));
+}
+
+/* アクティブ時 */
+.gh-gearbox-copy-btn:active {
+  color: var(--fgColor-default, #1f2328);
+  background-color: var(--bgColor-neutral-muted, rgba(175, 184, 193, 0.3));
+}
+
+/* コピー成功時 */
+.gh-gearbox-copy-btn--success {
+  color: var(--fgColor-success, #1a7f37) !important;
+}
+
+.gh-gearbox-copy-btn--success:hover {
+  color: var(--fgColor-success, #1a7f37) !important;
+}
+
+/* SVGアイコンのサイズ調整 */
+.gh-gearbox-copy-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .gh-gearbox-copy-btn {
+    color: #848d97;
+  }
+
+  .gh-gearbox-copy-btn:hover {
+    color: #e6edf3;
+    background-color: rgba(177, 186, 196, 0.12);
+  }
+
+  .gh-gearbox-copy-btn:active {
+    color: #e6edf3;
+    background-color: rgba(177, 186, 196, 0.2);
+  }
+
+  .gh-gearbox-copy-btn--success {
+    color: #3fb950 !important;
+  }
+
+  .gh-gearbox-copy-btn--success:hover {
+    color: #3fb950 !important;
+  }
+}
+
+/* GitHub のダークテーマ（data-color-mode属性）にも対応 */
+[data-color-mode="dark"] .gh-gearbox-copy-btn,
+[data-dark-theme] .gh-gearbox-copy-btn {
+  color: #848d97;
+}
+
+[data-color-mode="dark"] .gh-gearbox-copy-btn:hover,
+[data-dark-theme] .gh-gearbox-copy-btn:hover {
+  color: #e6edf3;
+  background-color: rgba(177, 186, 196, 0.12);
+}
+
+[data-color-mode="dark"] .gh-gearbox-copy-btn:active,
+[data-dark-theme] .gh-gearbox-copy-btn:active {
+  color: #e6edf3;
+  background-color: rgba(177, 186, 196, 0.2);
+}
+
+[data-color-mode="dark"] .gh-gearbox-copy-btn--success,
+[data-dark-theme] .gh-gearbox-copy-btn--success {
+  color: #3fb950 !important;
+}
