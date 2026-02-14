@@ -58,10 +58,13 @@ const getFileName = (commentElement: HTMLElement): string => {
 /**
  * レビューコメントから対象行番号を取得する
  *
- * GitHub の DOM 構造:
- * - コメントスレッドコンテナ内に .js-multi-line-preview-start / .js-multi-line-preview-end がある
- *   (例: "+91", "+92")
- * - 単一行の場合は "Comment on line +91" のようなテキスト
+ * GitHub の DOM 構造 (Conversation タブ):
+ * - .js-resolvable-timeline-thread-container 内にコードスニペットの table がある
+ * - table 内の td.blob-num[data-line-number] に行番号が格納されている
+ * - 最初と最後の行番号を取得して範囲を返す (例: "L302-L305")
+ *
+ * GitHub の DOM 構造 (Files changed タブ):
+ * - コメント行の直前の diff 行から行番号を取得
  */
 const getLineNumber = (commentElement: HTMLElement): string => {
   // コメントスレッドコンテナを取得
@@ -70,45 +73,46 @@ const getLineNumber = (commentElement: HTMLElement): string => {
     commentElement.closest<HTMLElement>(".comment-holder");
 
   if (threadContainer) {
-    // 1. 複数行コメント: .js-multi-line-preview-start と .js-multi-line-preview-end
-    const lineStart = threadContainer.querySelector<HTMLElement>(".js-multi-line-preview-start");
-    const lineEnd = threadContainer.querySelector<HTMLElement>(".js-multi-line-preview-end");
+    // 1. コードスニペットのテーブルから行番号を取得
+    //    td.blob-num[data-line-number] にコードスニペットの各行の行番号が入っている
+    const lineNumberCells = threadContainer.querySelectorAll<HTMLElement>(
+      "td.blob-num[data-line-number]",
+    );
 
-    if (lineStart && lineEnd) {
-      const start = lineStart.textContent?.trim().replace(/^\+/, "") ?? "";
-      const end = lineEnd.textContent?.trim().replace(/^\+/, "") ?? "";
-      if (start && end && start !== end) {
-        return `L${start}-L${end}`;
-      }
-      if (start) {
-        return `L${start}`;
+    if (lineNumberCells.length > 0) {
+      const lineNumbers = Array.from(lineNumberCells)
+        .map((cell) => cell.getAttribute("data-line-number"))
+        .filter((n): n is string => n !== null && n !== "")
+        .map(Number)
+        .filter((n) => !Number.isNaN(n));
+
+      if (lineNumbers.length > 0) {
+        const first = Math.min(...lineNumbers);
+        const last = Math.max(...lineNumbers);
+        if (first !== last) {
+          return `L${first}-L${last}`;
+        }
+        return `L${first}`;
       }
     }
 
-    // 2. 単一行コメント: "Comment on line +XX" テキストから抽出
-    const lineInfo = threadContainer.querySelector<HTMLElement>(
-      ".f6.color-fg-muted, .js-line-preview",
-    );
-    if (lineInfo) {
-      const text = lineInfo.textContent ?? "";
-      const match = text.match(/line\s+\+?(\d+)/i);
+    // 2. フォールバック: summary 内のファイルリンクの href からアンカー行番号を抽出
+    //    (例: href="...#diff-xxxR302" → 302)
+    const fileLink = threadContainer.querySelector<HTMLAnchorElement>("a[href*='#diff-']");
+    if (fileLink) {
+      const href = fileLink.getAttribute("href") ?? "";
+      const match = href.match(/R(\d+)$/);
       if (match) {
         return `L${match[1]}`;
-      }
-      // "lines +91 to +92" パターン
-      const rangeMatch = text.match(/lines?\s+\+?(\d+)\s+to\s+\+?(\d+)/i);
-      if (rangeMatch) {
-        return `L${rangeMatch[1]}-L${rangeMatch[2]}`;
       }
     }
   }
 
-  // 3. フォールバック: コメント行の直前の diff 行から行番号を取得
+  // 3. フォールバック: コメント行の直前の diff 行から行番号を取得 (Files changed タブ)
   const commentRow = commentElement.closest<HTMLTableRowElement>("tr");
   if (commentRow) {
     let prevRow = commentRow.previousElementSibling as HTMLTableRowElement | null;
     while (prevRow) {
-      // blob-num-addition (追加行) を優先、なければ blob-num で取得
       const blobNum =
         prevRow.querySelector<HTMLElement>("td.blob-num-addition[data-line-number]") ??
         prevRow.querySelector<HTMLElement>("td.blob-num[data-line-number]:last-of-type");
