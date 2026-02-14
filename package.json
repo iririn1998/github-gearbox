@@ -1,0 +1,17 @@
+{
+  "name": "github-gearbox",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GitHub productivity tools - Chrome Extension",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "tsc --noEmit && vite build",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.304",
+    "typescript": "^5.9.3",
+    "vite": "^6.3.5"
+  }
+}

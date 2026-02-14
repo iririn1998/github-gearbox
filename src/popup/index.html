@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub Gearbox</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <div class="popup-container">
+      <header class="popup-header">
+        <h1>GitHub Gearbox</h1>
+      </header>
+      <main class="popup-main">
+        <div class="feature-item">
+          <label class="feature-toggle">
+            <input
+              type="checkbox"
+              id="toggle-task-list-label"
+              checked
+            />
+            <span class="feature-name">タスクリスト Label 拡張</span>
+          </label>
+          <p class="feature-description">
+            チェックボックス横のテキストをクリックしてもチェックできるようにします
+          </p>
+        </div>
+      </main>
+      <footer class="popup-footer">
+        <span class="version">v1.0.0</span>
+      </footer>
+    </div>
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>

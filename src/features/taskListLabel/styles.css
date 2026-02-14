@@ -1,0 +1,31 @@
+/**
+ * タスクリストLabel機能のスタイル
+ * チェックボックス横のテキストをクリック可能に見せる
+ */
+
+/* labelにポインターカーソルを適用 */
+label.gh-gearbox-task-label {
+  cursor: pointer;
+  /* テキスト選択を防止してクリック操作を優先 */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ホバー時に薄いハイライトで視覚的フィードバック */
+label.gh-gearbox-task-label:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-radius: 3px;
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  label.gh-gearbox-task-label:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* GitHub のダークテーマ（data-color-mode属性）にも対応 */
+[data-color-mode="dark"] label.gh-gearbox-task-label:hover,
+[data-dark-theme] label.gh-gearbox-task-label:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}

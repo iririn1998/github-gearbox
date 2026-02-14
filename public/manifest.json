@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "GitHub Gearbox",
+  "version": "1.0.0",
+  "description": "GitHub の生産性を向上させるツール集。タスクリストのクリック領域拡大など。",
+  "permissions": ["storage"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*"],
+      "js": ["content.js"],
+      "css": ["assets/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_title": "GitHub Gearbox"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
