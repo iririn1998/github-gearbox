@@ -88,3 +88,5 @@ export const myNewFeature: Feature = {
 import { myNewFeature } from "./features/myNewFeature";
 const features: Feature[] = [taskListLabelFeature, myNewFeature];
 ```
+
+---
