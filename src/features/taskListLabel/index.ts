@@ -27,9 +27,7 @@ function wrapWithLabel(listItem: HTMLElement): void {
     return;
   }
 
-  const checkbox = listItem.querySelector<HTMLInputElement>(
-    "input.task-list-item-checkbox"
-  );
+  const checkbox = listItem.querySelector<HTMLInputElement>("input.task-list-item-checkbox");
   if (!checkbox) {
     return;
   }
@@ -79,7 +77,7 @@ function wrapWithLabel(listItem: HTMLElement): void {
  */
 function processAllTaskListItems(): void {
   const items = document.querySelectorAll<HTMLElement>(
-    "li.task-list-item:not([" + PROCESSED_ATTR + "])"
+    "li.task-list-item:not([" + PROCESSED_ATTR + "])",
   );
   items.forEach(wrapWithLabel);
 }
@@ -140,13 +138,9 @@ function cleanup(): void {
   }
 
   // 付与したlabelを解除してノードを元に戻す
-  const processedItems = document.querySelectorAll<HTMLElement>(
-    `[${PROCESSED_ATTR}]`
-  );
+  const processedItems = document.querySelectorAll<HTMLElement>(`[${PROCESSED_ATTR}]`);
   processedItems.forEach((item) => {
-    const label = item.querySelector<HTMLLabelElement>(
-      "label.gh-gearbox-task-label"
-    );
+    const label = item.querySelector<HTMLLabelElement>("label.gh-gearbox-task-label");
     if (label) {
       // labelの中身をlabelの前（checkboxの後）に戻す
       while (label.firstChild) {
@@ -156,9 +150,7 @@ function cleanup(): void {
     }
 
     // checkboxのIDを除去
-    const checkbox = item.querySelector<HTMLInputElement>(
-      `input[id^="${CHECKBOX_ID_PREFIX}"]`
-    );
+    const checkbox = item.querySelector<HTMLInputElement>(`input[id^="${CHECKBOX_ID_PREFIX}"]`);
     if (checkbox) {
       checkbox.removeAttribute("id");
     }
