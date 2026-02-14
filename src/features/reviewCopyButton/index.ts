@@ -14,98 +14,115 @@ let observer: MutationObserver | null = null;
 /**
  * レビューコメントからファイル名を取得する
  *
- * GitHub の PR レビューコメントは以下のいずれかの構造に含まれる:
- * 1. Files changed タブ: .file[data-path] > ... > コメント
- * 2. Conversation タブ: .timeline-comment-group 内にファイルパス情報がある
+ * GitHub の PR レビューコメントの DOM 構造:
+ * - Files changed タブ: .file[data-tagsearch-path] > table > tr > td > ... > .review-comment
+ * - Conversation タブ: コメントスレッド内にファイルリンクがある
  */
 function getFileName(commentElement: HTMLElement): string {
-  // 1. Files changed タブ: 祖先の .file 要素から data-path を取得
+  // 1. 祖先の .file 要素から data-tagsearch-path を取得（Files changed タブ）
+  const fileWrapper = commentElement.closest<HTMLElement>("[data-tagsearch-path]");
+  if (fileWrapper) {
+    return fileWrapper.getAttribute("data-tagsearch-path") ?? "";
+  }
+
+  // 2. 祖先の .file 要素から data-path を取得
   const fileContainer = commentElement.closest<HTMLElement>(".file[data-path]");
   if (fileContainer) {
     return fileContainer.getAttribute("data-path") ?? "";
   }
 
-  // 2. copilot-diff-entry 要素の data-file-path 属性
-  const diffEntry = commentElement.closest<HTMLElement>("[data-file-path]");
-  if (diffEntry) {
-    return diffEntry.getAttribute("data-file-path") ?? "";
+  // 3. .file-header 内の a[title] からファイル名を取得
+  const fileElement = commentElement.closest<HTMLElement>(".file");
+  if (fileElement) {
+    const fileLink = fileElement.querySelector<HTMLElement>(
+      ".file-header a[title], .file-info a",
+    );
+    if (fileLink) {
+      return fileLink.getAttribute("title") ?? fileLink.textContent?.trim() ?? "";
+    }
   }
 
-  // 3. Conversation タブ: コメントスレッド内のファイルリンクから取得
+  // 4. Conversation タブ: コメントスレッドのヘッダーにあるファイルリンク
+  //    (.js-resolvable-timeline-thread-container 内の summary にファイル名リンクがある)
   const threadContainer = commentElement.closest<HTMLElement>(
-    ".inline-comment-form-container, .review-thread-component, .js-resolvable-timeline-thread-container",
+    ".js-resolvable-timeline-thread-container",
   );
   if (threadContainer) {
-    // スレッドヘッダーにあるファイルパスリンクを探す
     const fileLink = threadContainer.querySelector<HTMLAnchorElement>(
       "a[href*='/files']",
     );
     if (fileLink) {
-      // リンクテキストからファイル名を取得
       return fileLink.textContent?.trim() ?? "";
     }
   }
 
-  // 4. .file-header 内の .file-info から取得
-  const fileHeader = commentElement
-    .closest<HTMLElement>(".file")
-    ?.querySelector<HTMLElement>(".file-header .file-info a, .file-header .file-info .Truncate a");
-  if (fileHeader) {
-    return fileHeader.textContent?.trim() ?? "";
-  }
-
-  return "unknown";
+  return "";
 }
 
 /**
  * レビューコメントから対象行番号を取得する
  *
- * コメントスレッドは diff テーブル内の tr 要素に配置されており、
- * 直前の行の td.blob-num から行番号を取得できる
+ * GitHub の DOM 構造:
+ * - コメントスレッドコンテナ内に .js-multi-line-preview-start / .js-multi-line-preview-end がある
+ *   (例: "+91", "+92")
+ * - 単一行の場合は "Comment on line +91" のようなテキスト
  */
 function getLineNumber(commentElement: HTMLElement): string {
-  // 1. コメントが含まれる tr の直前の行から行番号を取得
+  // コメントスレッドコンテナを取得
+  const threadContainer =
+    commentElement.closest<HTMLElement>(".js-resolvable-timeline-thread-container") ??
+    commentElement.closest<HTMLElement>(".comment-holder");
+
+  if (threadContainer) {
+    // 1. 複数行コメント: .js-multi-line-preview-start と .js-multi-line-preview-end
+    const lineStart = threadContainer.querySelector<HTMLElement>(".js-multi-line-preview-start");
+    const lineEnd = threadContainer.querySelector<HTMLElement>(".js-multi-line-preview-end");
+
+    if (lineStart && lineEnd) {
+      const start = lineStart.textContent?.trim().replace(/^\+/, "") ?? "";
+      const end = lineEnd.textContent?.trim().replace(/^\+/, "") ?? "";
+      if (start && end && start !== end) {
+        return `L${start}-L${end}`;
+      }
+      if (start) {
+        return `L${start}`;
+      }
+    }
+
+    // 2. 単一行コメント: "Comment on line +XX" テキストから抽出
+    const lineInfo = threadContainer.querySelector<HTMLElement>(
+      ".f6.color-fg-muted, .js-line-preview",
+    );
+    if (lineInfo) {
+      const text = lineInfo.textContent ?? "";
+      const match = text.match(/line\s+\+?(\d+)/i);
+      if (match) {
+        return `L${match[1]}`;
+      }
+      // "lines +91 to +92" パターン
+      const rangeMatch = text.match(/lines?\s+\+?(\d+)\s+to\s+\+?(\d+)/i);
+      if (rangeMatch) {
+        return `L${rangeMatch[1]}-L${rangeMatch[2]}`;
+      }
+    }
+  }
+
+  // 3. フォールバック: コメント行の直前の diff 行から行番号を取得
   const commentRow = commentElement.closest<HTMLTableRowElement>("tr");
   if (commentRow) {
-    // 直前の兄弟 tr を遡って行番号を探す
     let prevRow = commentRow.previousElementSibling as HTMLTableRowElement | null;
     while (prevRow) {
-      const blobNums = prevRow.querySelectorAll<HTMLElement>("td.blob-num[data-line-number]");
-      if (blobNums.length > 0) {
-        // 右側（新しいコード側）の行番号を優先
-        const lastBlobNum = blobNums[blobNums.length - 1];
-        const lineNum = lastBlobNum.getAttribute("data-line-number");
+      // blob-num-addition (追加行) を優先、なければ blob-num で取得
+      const blobNum =
+        prevRow.querySelector<HTMLElement>("td.blob-num-addition[data-line-number]") ??
+        prevRow.querySelector<HTMLElement>("td.blob-num[data-line-number]:last-of-type");
+      if (blobNum) {
+        const lineNum = blobNum.getAttribute("data-line-number");
         if (lineNum) {
           return `L${lineNum}`;
         }
       }
       prevRow = prevRow.previousElementSibling as HTMLTableRowElement | null;
-    }
-  }
-
-  // 2. Conversation タブのスレッドヘッダーから行番号リンクを取得
-  const threadContainer = commentElement.closest<HTMLElement>(
-    ".inline-comment-form-container, .review-thread-component, .js-resolvable-timeline-thread-container",
-  );
-  if (threadContainer) {
-    const lineLink = threadContainer.querySelector<HTMLAnchorElement>(
-      "a[href*='#diff-']",
-    );
-    if (lineLink) {
-      // href から行番号を抽出 (例: #diff-xxxR42, #diff-xxxL42-R50)
-      const href = lineLink.getAttribute("href") ?? "";
-      const lineMatch = href.match(/[RL](\d+)(?:-[RL](\d+))?$/);
-      if (lineMatch) {
-        if (lineMatch[2]) {
-          return `L${lineMatch[1]}-L${lineMatch[2]}`;
-        }
-        return `L${lineMatch[1]}`;
-      }
-      // リンクテキストに行番号が含まれている場合
-      const text = lineLink.textContent?.trim() ?? "";
-      if (text) {
-        return text;
-      }
     }
   }
 
@@ -116,17 +133,16 @@ function getLineNumber(commentElement: HTMLElement): string {
  * レビューコメントの本文テキストを取得する
  */
 function getCommentBody(commentElement: HTMLElement): string {
-  const markdownBody = commentElement.querySelector<HTMLElement>(
-    ".comment-body .markdown-body, .markdown-body",
-  );
-  if (markdownBody) {
-    return markdownBody.innerText.trim();
-  }
-
-  // フォールバック: .comment-body から直接取得
+  // .comment-body 内のテキストを取得（GitHub はレンダリング済みHTMLを .comment-body 内に配置）
   const commentBody = commentElement.querySelector<HTMLElement>(".comment-body");
   if (commentBody) {
     return commentBody.innerText.trim();
+  }
+
+  // フォールバック: .markdown-body から取得
+  const markdownBody = commentElement.querySelector<HTMLElement>(".markdown-body");
+  if (markdownBody) {
+    return markdownBody.innerText.trim();
   }
 
   return "";
@@ -138,7 +154,7 @@ function getCommentBody(commentElement: HTMLElement): string {
 function formatCopyText(fileName: string, lineNumber: string, comment: string): string {
   const parts: string[] = [];
 
-  if (fileName && fileName !== "unknown") {
+  if (fileName) {
     parts.push(`File: ${fileName}`);
   }
 
@@ -202,31 +218,15 @@ function addCopyButtonToComment(commentElement: HTMLElement): void {
   }
 
   // コメントヘッダーのアクション領域を探す
-  const headerActions =
-    commentElement.querySelector<HTMLElement>(
-      ".timeline-comment-actions, .review-comment-contents .timeline-comment-actions",
-    ) ??
-    commentElement.querySelector<HTMLElement>(
-      ".comment-header .timeline-comment-actions",
-    ) ??
-    commentElement.querySelector<HTMLElement>(
-      // GitHub の新しいUI構造にも対応
-      ".timeline-comment-header .timeline-comment-actions",
-    );
+  // .timeline-comment-actions は .review-comment 直下のヘッダー内にある
+  const headerActions = commentElement.querySelector<HTMLElement>(
+    ".timeline-comment-actions",
+  );
 
   if (headerActions) {
     const button = createCopyButton(commentElement);
     // アクションメニューの先頭に挿入
     headerActions.prepend(button);
-  } else {
-    // アクション領域が見つからない場合、コメントヘッダーの末尾に追加
-    const commentHeader = commentElement.querySelector<HTMLElement>(
-      ".timeline-comment-header, .comment-header",
-    );
-    if (commentHeader) {
-      const button = createCopyButton(commentElement);
-      commentHeader.appendChild(button);
-    }
   }
 
   // 処理済みマークを付与
@@ -235,19 +235,15 @@ function addCopyButtonToComment(commentElement: HTMLElement): void {
 
 /**
  * ページ内の全レビューコメントにコピーボタンを追加する
+ *
+ * ターゲットは .review-comment のみ。
+ * .js-comment-container は .review-comment を内包する親要素であり、
+ * 両方をターゲットにするとボタンが2重に挿入されるため除外する。
  */
 function processAllReviewComments(): void {
-  // PR の Files changed タブ、Conversation タブのレビューコメントを対象
-  const selectors = [
-    // インラインレビューコメント（Files changed タブ）
+  const comments = document.querySelectorAll<HTMLElement>(
     `.review-comment:not([${PROCESSED_ATTR}])`,
-    // タイムラインのレビューコメント（Conversation タブ）
-    `.timeline-comment-group .review-comment:not([${PROCESSED_ATTR}])`,
-    // 個別のタイムラインコメント
-    `.js-comment-container:not([${PROCESSED_ATTR}])`,
-  ].join(", ");
-
-  const comments = document.querySelectorAll<HTMLElement>(selectors);
+  );
   comments.forEach(addCopyButtonToComment);
 }
 
@@ -266,13 +262,9 @@ function startObserver(): void {
       if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
         for (const node of mutation.addedNodes) {
           if (node instanceof HTMLElement) {
-            // レビューコメント関連の要素が追加されたか確認
             if (
               node.classList?.contains("review-comment") ||
-              node.classList?.contains("js-comment-container") ||
-              node.querySelector?.(".review-comment") ||
-              node.querySelector?.(".js-comment-container") ||
-              node.classList?.contains("js-resolvable-timeline-thread-container")
+              node.querySelector?.(".review-comment")
             ) {
               shouldProcess = true;
               break;
