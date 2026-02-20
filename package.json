@@ -11,10 +11,15 @@
     "lint": "oxlint src/",
     "lint:fix": "oxlint --fix src/",
     "format": "oxfmt src/ vite.config.ts",
-    "format:check": "oxfmt --check src/ vite.config.ts"
+    "format:check": "oxfmt --check src/ vite.config.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.304",
+    "@vitest/coverage-v8": "^4.0.18",
+    "happy-dom": "^20.6.3",
     "lefthook": "^2.1.1",
     "oxfmt": "^0.32.0",
     "oxlint": "^1.47.0",

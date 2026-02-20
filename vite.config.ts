@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import { resolve } from "path";
 import {
   copyFileSync,
@@ -98,4 +98,16 @@ export default defineConfig({
     },
   },
   plugins: [chromeExtensionPlugin()],
+  test: {
+    globals: true,
+    environment: "happy-dom",
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    exclude: ["node_modules", "dist"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
+      include: ["src/**/*.ts"],
+      exclude: ["src/**/*.{test,spec}.ts", "src/vite-env.d.ts"],
+    },
+  },
 });
