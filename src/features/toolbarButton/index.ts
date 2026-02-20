@@ -5,6 +5,8 @@ const PROCESSED_ATTR = "data-gh-gearbox-toolbar-btn";
 const BUTTON_CLASS = "gh-gearbox-toolbar-btn";
 const TOOLTIP_CLASS = "gh-gearbox-toolbar-tooltip";
 const GROUP_CLASS = "gh-gearbox-toolbar-group";
+const DROPDOWN_CLASS = "gh-gearbox-dropdown";
+const DROPDOWN_OPEN_CLASS = "gh-gearbox-dropdown--open";
 
 /**
  * ツールバーのセレクタ
@@ -16,14 +18,177 @@ const TOOLBAR_SELECTOR = 'div[role="toolbar"][aria-label="Formatting tools"]';
 /** 歯車アイコン (Octicon gear SVG) */
 const GEAR_ICON = `<svg aria-hidden="true" focusable="false" class="octicon octicon-gear" viewBox="0 0 16 16" width="16" height="16" fill="currentColor" display="inline-block" overflow="visible" style="vertical-align: text-bottom;"><path d="M8 0a8.2 8.2 0 0 1 .701.031C9.444.095 9.99.645 10.16 1.29l.288 1.107c.018.066.079.158.212.224.231.114.454.243.668.386.123.082.233.09.299.071l1.103-.303c.644-.176 1.392.021 1.82.63.27.385.506.792.704 1.218.315.675.111 1.422-.364 1.891l-.814.806c-.049.048-.098.147-.088.294a6.084 6.084 0 0 1 0 .772c-.01.147.04.246.088.294l.814.806c.475.469.679 1.216.364 1.891a7.977 7.977 0 0 1-.704 1.217c-.428.61-1.176.807-1.82.63l-1.102-.302c-.067-.019-.177-.011-.3.071a5.909 5.909 0 0 1-.668.386c-.133.066-.194.158-.211.224l-.29 1.106c-.168.646-.715 1.196-1.458 1.26a8.006 8.006 0 0 1-1.402 0c-.743-.064-1.289-.614-1.458-1.26l-.289-1.106c-.018-.066-.079-.158-.212-.224a5.738 5.738 0 0 1-.668-.386c-.123-.082-.233-.09-.299-.071l-1.103.303c-.644.176-1.392-.021-1.82-.63a8.12 8.12 0 0 1-.704-1.218c-.315-.675-.111-1.422.363-1.891l.815-.806c.049-.048.098-.147.088-.294a6.214 6.214 0 0 1 0-.772c.01-.147-.04-.246-.088-.294l-.815-.806C.635 6.045.431 5.298.746 4.623a7.92 7.92 0 0 1 .704-1.217c.428-.61 1.176-.807 1.82-.63l1.102.302c.067.019.177.011.3-.071.214-.143.437-.272.668-.386.133-.066.194-.158.211-.224l.29-1.106C6.009.645 6.556.095 7.299.03 7.53.01 7.764 0 8 0Zm-.571 1.525c-.036.003-.108.036-.137.146l-.289 1.105c-.147.561-.549.967-.998 1.189-.173.086-.34.183-.5.29-.417.278-.97.423-1.529.27l-1.103-.303c-.109-.03-.175.016-.195.045-.22.312-.412.644-.573.99-.014.031-.021.11.059.19l.815.806c.411.406.562.957.53 1.456a4.709 4.709 0 0 0 0 .582c.032.499-.119 1.05-.53 1.456l-.815.806c-.08.08-.073.159-.059.19.162.346.353.677.573.989.02.03.085.076.195.046l1.102-.303c.56-.153 1.113-.008 1.53.27.16.107.327.204.5.29.449.222.851.628.998 1.189l.289 1.105c.029.109.101.143.137.146a6.6 6.6 0 0 0 1.142 0c.036-.003.108-.036.137-.146l.289-1.105c.147-.561.549-.967.998-1.189.173-.086.34-.183.5-.29.417-.278.97-.423 1.529-.27l1.103.303c.109.029.175-.016.195-.045.22-.313.411-.644.573-.99.014-.031.021-.11-.059-.19l-.815-.806c-.411-.406-.562-.957-.53-1.456a4.709 4.709 0 0 0 0-.582c-.032-.499.119-1.05.53-1.456l.815-.806c.08-.08.073-.159.059-.19a6.464 6.464 0 0 0-.573-.989c-.02-.03-.085-.076-.195-.046l-1.102.303c-.56.153-1.113.008-1.53-.27a4.44 4.44 0 0 0-.5-.29c-.449-.222-.851-.628-.998-1.189l-.289-1.105c-.029-.11-.101-.143-.137-.146a6.6 6.6 0 0 0-1.142 0ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM9.5 8a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 9.5 8Z"></path></svg>`;
 
+/** ドロップダウンのサンプル選択肢 */
+const DROPDOWN_ITEMS = [
+  {
+    label: "レビューコメントをコピー",
+    value: "copy-review-comment",
+    handler: () => console.log("[GitHub Gearbox] レビューコメントをコピー が選択されました"),
+  },
+  {
+    label: "差分を要約する",
+    value: "summarize-diff",
+    handler: () => console.log("[GitHub Gearbox] 差分を要約する が選択されました"),
+  },
+  {
+    label: "チェックリストを挿入",
+    value: "insert-checklist",
+    handler: () => console.log("[GitHub Gearbox] チェックリストを挿入 が選択されました"),
+  },
+  {
+    label: "テンプレートを適用",
+    value: "apply-template",
+    handler: () => console.log("[GitHub Gearbox] テンプレートを適用 が選択されました"),
+  },
+];
+
 let observer: MutationObserver | null = null;
 let tooltipIdCounter = 0;
+let outsideClickHandler: ((e: MouseEvent) => void) | null = null;
+let keydownHandler: ((e: KeyboardEvent) => void) | null = null;
+let activeDropdown: HTMLDivElement | null = null;
+let activeAnchor: HTMLElement | null = null;
 
 /**
  * ユニークなツールチップIDを生成する
  */
 const generateTooltipId = (): string => {
   return `gh-gearbox-toolbar-tooltip-${tooltipIdCounter++}`;
+};
+
+/**
+ * 開いているドロップダウンを閉じる
+ * @param returnFocus - true のとき元のボタンにフォーカスを戻す
+ */
+const closeDropdown = (returnFocus = true): void => {
+  if (activeAnchor) {
+    activeAnchor.setAttribute("aria-expanded", "false");
+  }
+  if (activeDropdown) {
+    activeDropdown.remove();
+    activeDropdown = null;
+  }
+  if (outsideClickHandler) {
+    document.removeEventListener("click", outsideClickHandler, true);
+    outsideClickHandler = null;
+  }
+  if (keydownHandler) {
+    document.removeEventListener("keydown", keydownHandler, true);
+    keydownHandler = null;
+  }
+  if (returnFocus && activeAnchor) {
+    activeAnchor.focus();
+  }
+  activeAnchor = null;
+};
+
+/**
+ * ドロップダウンメニューを作成して body に追加し、ボタン直下に配置する
+ */
+const openDropdown = (anchor: HTMLElement): void => {
+  // 既に開いていれば閉じる（フォーカスは戻さない）
+  closeDropdown(false);
+  activeAnchor = anchor;
+
+  const dropdown = document.createElement("div");
+  dropdown.className = `${DROPDOWN_CLASS} ${DROPDOWN_OPEN_CLASS}`;
+  dropdown.setAttribute("role", "menu");
+
+  for (const item of DROPDOWN_ITEMS) {
+    const menuItem = document.createElement("button");
+    menuItem.className = `${DROPDOWN_CLASS}__item`;
+    menuItem.setAttribute("role", "menuitem");
+    menuItem.type = "button";
+    menuItem.textContent = item.label;
+    menuItem.dataset.value = item.value;
+
+    menuItem.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      item.handler();
+      closeDropdown();
+    });
+
+    dropdown.appendChild(menuItem);
+  }
+
+  // body に追加してから位置を計算 (サイズ取得のため)
+  document.body.appendChild(dropdown);
+  activeDropdown = dropdown;
+
+  const rect = anchor.getBoundingClientRect();
+  const dropdownRect = dropdown.getBoundingClientRect();
+
+  let top = rect.bottom + 4;
+  let left = rect.right - dropdownRect.width;
+
+  // 画面下にはみ出す場合はボタン上に表示
+  if (top + dropdownRect.height > window.innerHeight) {
+    top = rect.top - dropdownRect.height - 4;
+  }
+  // 画面左にはみ出す場合は補正
+  if (left < 0) {
+    left = rect.left;
+  }
+
+  dropdown.style.top = `${top + window.scrollY}px`;
+  dropdown.style.left = `${left + window.scrollX}px`;
+
+  // 先頭項目にフォーカス
+  const items = Array.from(
+    dropdown.querySelectorAll<HTMLButtonElement>(`.${DROPDOWN_CLASS}__item`),
+  );
+  items[0]?.focus();
+
+  // キーボードナビゲーション
+  keydownHandler = (e: KeyboardEvent) => {
+    if (!activeDropdown) return;
+    const currentItems = Array.from(
+      activeDropdown.querySelectorAll<HTMLButtonElement>(`.${DROPDOWN_CLASS}__item`),
+    );
+    const idx = currentItems.indexOf(document.activeElement as HTMLButtonElement);
+
+    switch (e.key) {
+      case "Escape":
+        e.preventDefault();
+        e.stopPropagation();
+        closeDropdown(); // フォーカスをボタンに戻す
+        break;
+      case "ArrowDown":
+        e.preventDefault();
+        e.stopPropagation();
+        currentItems[(idx + 1) % currentItems.length]?.focus();
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        e.stopPropagation();
+        currentItems[(idx - 1 + currentItems.length) % currentItems.length]?.focus();
+        break;
+      case "Home":
+        e.preventDefault();
+        e.stopPropagation();
+        currentItems[0]?.focus();
+        break;
+      case "End":
+        e.preventDefault();
+        e.stopPropagation();
+        currentItems[currentItems.length - 1]?.focus();
+        break;
+      case "Tab":
+        // フォーカスは自然に移動させる
+        closeDropdown(false);
+        break;
+    }
+  };
+  document.addEventListener("keydown", keydownHandler, true);
+
+  // 外側クリックで閉じる
+  outsideClickHandler = (ev: MouseEvent) => {
+    if (!dropdown.contains(ev.target as Node) && ev.target !== anchor) {
+      closeDropdown(false);
+    }
+  };
+  document.addEventListener("click", outsideClickHandler, true);
 };
 
 /**
@@ -50,7 +215,9 @@ const createToolbarButton = (): { group: HTMLDivElement; button: HTMLButtonEleme
   button.setAttribute("data-size", "medium");
   button.setAttribute("data-variant", "invisible");
   button.setAttribute("aria-labelledby", tooltipId);
-  button.tabIndex = -1;
+  button.setAttribute("aria-haspopup", "menu");
+  button.setAttribute("aria-expanded", "false");
+  button.tabIndex = 0;
   button.innerHTML = GEAR_ICON;
   button.classList.add(BUTTON_CLASS);
 
@@ -72,11 +239,27 @@ const createToolbarButton = (): { group: HTMLDivElement; button: HTMLButtonEleme
   group.appendChild(button);
   group.appendChild(tooltip);
 
-  // クリックイベント
+  // ボタンクリック: ドロップダウンを開閉する
   button.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("[GitHub Gearbox] ツールバーボタンがクリックされました");
+    if (activeDropdown) {
+      closeDropdown(false); // 既にボタンにフォーカスがあるので戻し不要
+    } else {
+      button.setAttribute("aria-expanded", "true");
+      console.log("[GitHub Gearbox] ドロップダウンを開きました");
+      openDropdown(button);
+    }
+  });
+
+  // ArrowDown でドロップダウンを開く
+  button.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown" && !activeDropdown) {
+      e.preventDefault();
+      e.stopPropagation();
+      button.setAttribute("aria-expanded", "true");
+      openDropdown(button);
+    }
   });
 
   return { group, button };
@@ -156,6 +339,9 @@ const cleanup = (): void => {
     observer.disconnect();
     observer = null;
   }
+
+  // ドロップダウンを閉じてクリーンアップ
+  closeDropdown();
 
   // 追加したグループを全て除去
   const groups = document.querySelectorAll<HTMLElement>(`.${GROUP_CLASS}`);

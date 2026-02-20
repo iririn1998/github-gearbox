@@ -3,3 +3,41 @@
  * GitHub の既存ボタンと同じクラスを使用しているため、スタイルは最小限
  * 識別用クラスに対する追加スタイルのみ定義
  */
+
+.gh-gearbox-dropdown {
+  display: none;
+  position: absolute;
+  z-index: 9999;
+  min-width: 180px;
+  padding: 4px 0;
+  background-color: var(--bgColor-overlay, #ffffff);
+  border: 1px solid var(--borderColor-default, #d0d7de);
+  border-radius: 6px;
+  box-shadow: var(--shadow-floating-small, 0 1px 3px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(140, 149, 159, 0.2));
+}
+
+.gh-gearbox-dropdown--open {
+  display: block;
+}
+
+.gh-gearbox-dropdown__item {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: var(--fgColor-default, #24292f);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.gh-gearbox-dropdown__item:hover,
+.gh-gearbox-dropdown__item:focus-visible {
+  background-color: var(--bgColor-accent-muted, #ddf4ff);
+  color: var(--fgColor-accent, #0969da);
+  outline: none;
+}
