@@ -8,6 +8,7 @@
     "dev": "vite build --watch",
     "build": "tsc --noEmit && vite build",
     "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
     "lint": "oxlint src/",
     "lint:fix": "oxlint --fix src/",
     "format": "oxfmt src/ vite.config.ts",
