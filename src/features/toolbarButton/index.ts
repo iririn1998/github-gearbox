@@ -18,27 +18,35 @@ const TOOLBAR_SELECTOR = 'div[role="toolbar"][aria-label="Formatting tools"]';
 /** 歯車アイコン (Octicon gear SVG) */
 const GEAR_ICON = `<svg aria-hidden="true" focusable="false" class="octicon octicon-gear" viewBox="0 0 16 16" width="16" height="16" fill="currentColor" display="inline-block" overflow="visible" style="vertical-align: text-bottom;"><path d="M8 0a8.2 8.2 0 0 1 .701.031C9.444.095 9.99.645 10.16 1.29l.288 1.107c.018.066.079.158.212.224.231.114.454.243.668.386.123.082.233.09.299.071l1.103-.303c.644-.176 1.392.021 1.82.63.27.385.506.792.704 1.218.315.675.111 1.422-.364 1.891l-.814.806c-.049.048-.098.147-.088.294a6.084 6.084 0 0 1 0 .772c-.01.147.04.246.088.294l.814.806c.475.469.679 1.216.364 1.891a7.977 7.977 0 0 1-.704 1.217c-.428.61-1.176.807-1.82.63l-1.102-.302c-.067-.019-.177-.011-.3.071a5.909 5.909 0 0 1-.668.386c-.133.066-.194.158-.211.224l-.29 1.106c-.168.646-.715 1.196-1.458 1.26a8.006 8.006 0 0 1-1.402 0c-.743-.064-1.289-.614-1.458-1.26l-.289-1.106c-.018-.066-.079-.158-.212-.224a5.738 5.738 0 0 1-.668-.386c-.123-.082-.233-.09-.299-.071l-1.103.303c-.644.176-1.392-.021-1.82-.63a8.12 8.12 0 0 1-.704-1.218c-.315-.675-.111-1.422.363-1.891l.815-.806c.049-.048.098-.147.088-.294a6.214 6.214 0 0 1 0-.772c.01-.147-.04-.246-.088-.294l-.815-.806C.635 6.045.431 5.298.746 4.623a7.92 7.92 0 0 1 .704-1.217c.428-.61 1.176-.807 1.82-.63l1.102.302c.067.019.177.011.3-.071.214-.143.437-.272.668-.386.133-.066.194-.158.211-.224l.29-1.106C6.009.645 6.556.095 7.299.03 7.53.01 7.764 0 8 0Zm-.571 1.525c-.036.003-.108.036-.137.146l-.289 1.105c-.147.561-.549.967-.998 1.189-.173.086-.34.183-.5.29-.417.278-.97.423-1.529.27l-1.103-.303c-.109-.03-.175.016-.195.045-.22.312-.412.644-.573.99-.014.031-.021.11.059.19l.815.806c.411.406.562.957.53 1.456a4.709 4.709 0 0 0 0 .582c.032.499-.119 1.05-.53 1.456l-.815.806c-.08.08-.073.159-.059.19.162.346.353.677.573.989.02.03.085.076.195.046l1.102-.303c.56-.153 1.113-.008 1.53.27.16.107.327.204.5.29.449.222.851.628.998 1.189l.289 1.105c.029.109.101.143.137.146a6.6 6.6 0 0 0 1.142 0c.036-.003.108-.036.137-.146l.289-1.105c.147-.561.549-.967.998-1.189.173-.086.34-.183.5-.29.417-.278.97-.423 1.529-.27l1.103.303c.109.029.175-.016.195-.045.22-.313.411-.644.573-.99.014-.031.021-.11-.059-.19l-.815-.806c-.411-.406-.562-.957-.53-1.456a4.709 4.709 0 0 0 0-.582c-.032-.499.119-1.05.53-1.456l.815-.806c.08-.08.073-.159.059-.19a6.464 6.464 0 0 0-.573-.989c-.02-.03-.085-.076-.195-.046l-1.102.303c-.56.153-1.113.008-1.53-.27a4.44 4.44 0 0 0-.5-.29c-.449-.222-.851-.628-.998-1.189l-.289-1.105c-.029-.11-.101-.143-.137-.146a6.6 6.6 0 0 0-1.142 0ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM9.5 8a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 9.5 8Z"></path></svg>`;
 
-/** ドロップダウンのサンプル選択肢 */
+/** レビューバッジの選択肢 (https://zenn.dev/yumemi_inc/articles/review-badge) */
 const DROPDOWN_ITEMS = [
   {
-    label: "レビューコメントをコピー",
-    value: "copy-review-comment",
-    handler: () => console.log("[GitHub Gearbox] レビューコメントをコピー が選択されました"),
+    label: "ask  - 確認・質問",
+    text: "![ask-badge](https://img.shields.io/badge/review-ask-yellowgreen.svg)",
   },
   {
-    label: "差分を要約する",
-    value: "summarize-diff",
-    handler: () => console.log("[GitHub Gearbox] 差分を要約する が選択されました"),
+    label: "must - 必須の修正",
+    text: "![must-badge](https://img.shields.io/badge/review-must-red.svg)",
   },
   {
-    label: "チェックリストを挿入",
-    value: "insert-checklist",
-    handler: () => console.log("[GitHub Gearbox] チェックリストを挿入 が選択されました"),
+    label: "imo  - 個人的意見",
+    text: "![imo-badge](https://img.shields.io/badge/review-imo-orange.svg)",
   },
   {
-    label: "テンプレートを適用",
-    value: "apply-template",
-    handler: () => console.log("[GitHub Gearbox] テンプレートを適用 が選択されました"),
+    label: "nits - 軽微な指摘",
+    text: "![nits-badge](https://img.shields.io/badge/review-nits-green.svg)",
+  },
+  {
+    label: "next - 次回対応",
+    text: "![next-badge](https://img.shields.io/badge/review-next-blueviolet)",
+  },
+  {
+    label: "memo - メモ",
+    text: "![memo-badge](https://img.shields.io/badge/review-memo-lightgrey)",
+  },
+  {
+    label: "good - 良いコード",
+    text: "![good-badge](https://img.shields.io/badge/review-good-brightgreen.svg)",
   },
 ];
 
@@ -48,6 +56,36 @@ let outsideClickHandler: ((e: MouseEvent) => void) | null = null;
 let keydownHandler: ((e: KeyboardEvent) => void) | null = null;
 let activeDropdown: HTMLDivElement | null = null;
 let activeAnchor: HTMLElement | null = null;
+
+/**
+ * ツールバーに紐づく textarea を DOM ツリーを遡って探す
+ */
+const findAssociatedTextarea = (from: HTMLElement): HTMLTextAreaElement | null => {
+  let el: HTMLElement | null = from.parentElement;
+  while (el && el !== document.body) {
+    const textarea = el.querySelector<HTMLTextAreaElement>("textarea");
+    if (textarea) return textarea;
+    el = el.parentElement;
+  }
+  return null;
+};
+
+/**
+ * textarea のカーソル位置にテキストを挿入する
+ */
+const insertTextAtCursor = (textarea: HTMLTextAreaElement, text: string): void => {
+  textarea.focus();
+  // execCommand はアンドゥ履歴を保持したまま挿入できる
+  const success = document.execCommand("insertText", false, text);
+  if (!success) {
+    // フォールバック: 手動で値を書き換えて input イベントを発火
+    const start = textarea.selectionStart ?? textarea.value.length;
+    const end = textarea.selectionEnd ?? start;
+    textarea.value = textarea.value.slice(0, start) + text + textarea.value.slice(end);
+    textarea.selectionStart = textarea.selectionEnd = start + text.length;
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+};
 
 /**
  * ユニークなツールチップIDを生成する
@@ -100,13 +138,19 @@ const openDropdown = (anchor: HTMLElement): void => {
     menuItem.setAttribute("role", "menuitem");
     menuItem.type = "button";
     menuItem.textContent = item.label;
-    menuItem.dataset.value = item.value;
 
     menuItem.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      item.handler();
-      closeDropdown();
+      // textarea を先に取得してから閉じる (closeDropdown が activeAnchor をクリアするため)
+      const textarea = activeAnchor ? findAssociatedTextarea(activeAnchor) : null;
+      closeDropdown(false);
+      if (textarea) {
+        insertTextAtCursor(textarea, item.text);
+        console.log(`[GitHub Gearbox] バッジを挿入しました: ${item.label}`);
+      } else {
+        console.warn("[GitHub Gearbox] 対応する textarea が見つかりませんでした");
+      }
     });
 
     dropdown.appendChild(menuItem);
