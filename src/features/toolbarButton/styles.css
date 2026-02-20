@@ -13,7 +13,11 @@
   background-color: var(--bgColor-overlay, #ffffff);
   border: 1px solid var(--borderColor-default, #d0d7de);
   border-radius: 6px;
-  box-shadow: var(--shadow-floating-small, 0 1px 3px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(140, 149, 159, 0.2));
+  box-shadow: var(
+    --shadow-floating-small,
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 8px 24px rgba(140, 149, 159, 0.2)
+  );
 }
 
 .gh-gearbox-dropdown--open {
