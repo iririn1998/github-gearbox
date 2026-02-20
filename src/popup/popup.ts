@@ -49,11 +49,13 @@ const init = async (): Promise<void> => {
   const features: FeatureSettings = (result.features as FeatureSettings) ?? {
     "task-list-label": { enabled: true },
     "review-copy-button": { enabled: true },
+    "toolbar-button": { enabled: true },
   };
 
   // 各機能のトグルを設定
   setupFeatureToggle(features, "task-list-label", "toggle-task-list-label", true);
   setupFeatureToggle(features, "review-copy-button", "toggle-review-copy-button", true);
+  setupFeatureToggle(features, "toolbar-button", "toggle-toolbar-button", true);
 };
 
 init();
