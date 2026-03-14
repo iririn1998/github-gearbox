@@ -31,7 +31,6 @@ export const createCopyButton = (commentElement: HTMLElement): HTMLButtonElement
     try {
       await navigator.clipboard.writeText(copyText);
 
-      // 成功フィードバック: チェックマークアイコンに変更
       button.innerHTML = checkIcon;
       button.classList.add(COPY_BTN_SUCCESS_CLASS);
 
@@ -48,39 +47,78 @@ export const createCopyButton = (commentElement: HTMLElement): HTMLButtonElement
 };
 
 /**
+ * コメント要素からボタン挿入先を見つける
+ *
+ * 旧UI: .timeline-comment-actions
+ * 新UI (React): [class*="ActionsButtonsContainer"] または [data-testid="comment-header"]
+ */
+const findInsertionTarget = (
+  commentElement: HTMLElement,
+): { container: HTMLElement; method: "prepend" | "append" } | null => {
+  // 旧UI: .timeline-comment-actions
+  const legacyActions = commentElement.querySelector<HTMLElement>(".timeline-comment-actions");
+  if (legacyActions) {
+    return { container: legacyActions, method: "prepend" };
+  }
+
+  // 新UI: ActionsButtonsContainer (React コンポーネント内)
+  const reactActions = commentElement.querySelector<HTMLElement>(
+    '[class*="ActionsButtonsContainer"]',
+  );
+  if (reactActions) {
+    return { container: reactActions, method: "prepend" };
+  }
+
+  // 新UI: comment-header の右側アクション領域
+  const headerActions = commentElement.querySelector<HTMLElement>(
+    '[data-testid="comment-header-right-side-items"]',
+  );
+  if (headerActions) {
+    return { container: headerActions, method: "prepend" };
+  }
+
+  return null;
+};
+
+/**
  * 単一のレビューコメントにコピーボタンを追加する
  */
 export const addCopyButtonToComment = (commentElement: HTMLElement): void => {
-  // 既に処理済みならスキップ
   if (commentElement.hasAttribute(PROCESSED_ATTR)) {
     return;
   }
 
-  // コメントヘッダーのアクション領域を探す
-  // .timeline-comment-actions は .review-comment 直下のヘッダー内にある
-  const headerActions = commentElement.querySelector<HTMLElement>(".timeline-comment-actions");
+  const target = findInsertionTarget(commentElement);
 
-  if (headerActions) {
+  if (target) {
     const button = createCopyButton(commentElement);
-    // アクションメニューの先頭に挿入
-    headerActions.prepend(button);
+    if (target.method === "prepend") {
+      target.container.prepend(button);
+    } else {
+      target.container.append(button);
+    }
   }
 
-  // 処理済みマークを付与
   commentElement.setAttribute(PROCESSED_ATTR, "true");
 };
 
 /**
- * ページ内の全レビューコメントにコピーボタンを追加する
+ * レビューコメント要素のセレクタ
  *
- * ターゲットは .review-comment のみ。
- * .js-comment-container は .review-comment を内包する親要素であり、
- * 両方をターゲットにするとボタンが2重に挿入されるため除外する。
+ * 旧UI: .review-comment
+ * 新UI: [data-testid="automated-review-comment"], review-thread-component 内のコメント
+ */
+const COMMENT_SELECTORS = [
+  `.review-comment:not([${PROCESSED_ATTR}])`,
+  `[data-testid="automated-review-comment"]:not([${PROCESSED_ATTR}])`,
+  `.review-thread-component .js-comments-holder > div:not([${PROCESSED_ATTR}])`,
+].join(", ");
+
+/**
+ * ページ内の全レビューコメントにコピーボタンを追加する
  */
 export const processAllReviewComments = (): void => {
-  const comments = document.querySelectorAll<HTMLElement>(
-    `.review-comment:not([${PROCESSED_ATTR}])`,
-  );
+  const comments = document.querySelectorAll<HTMLElement>(COMMENT_SELECTORS);
   comments.forEach(addCopyButtonToComment);
 };
 
@@ -88,11 +126,9 @@ export const processAllReviewComments = (): void => {
  * クリーンアップ: 追加したコピーボタンと属性を全て除去する
  */
 export const cleanupButtons = (): void => {
-  // 追加したコピーボタンを全て除去
   const buttons = document.querySelectorAll<HTMLElement>(`.${COPY_BTN_CLASS}`);
   buttons.forEach((btn) => btn.remove());
 
-  // 処理済みマークを除去
   const processedElements = document.querySelectorAll<HTMLElement>(`[${PROCESSED_ATTR}]`);
   processedElements.forEach((el) => el.removeAttribute(PROCESSED_ATTR));
 };

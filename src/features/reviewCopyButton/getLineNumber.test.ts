@@ -204,4 +204,32 @@ describe("getLineNumber", () => {
 
     expect(getLineNumber(comment)).toBe("L77");
   });
+
+  // ----- 新UI: review-thread-component のテスト -----
+
+  it("新UIの review-thread-component 内の blob-num から行番号を取得する", () => {
+    const thread = document.createElement("div");
+    thread.className = "review-thread-component";
+    const comment = document.createElement("div");
+    comment.setAttribute("data-testid", "automated-review-comment");
+
+    appendBlobNumTable(thread, [10, 11, 12]);
+    thread.appendChild(comment);
+    document.body.appendChild(thread);
+
+    expect(getLineNumber(comment)).toBe("L10-L12");
+  });
+
+  it("新UIの review-thread-component 内で blob-num が1行のみの場合、L{n} を返す", () => {
+    const thread = document.createElement("div");
+    thread.className = "review-thread-component";
+    const comment = document.createElement("div");
+    comment.setAttribute("data-testid", "automated-review-comment");
+
+    appendBlobNumTable(thread, [25]);
+    thread.appendChild(comment);
+    document.body.appendChild(thread);
+
+    expect(getLineNumber(comment)).toBe("L25");
+  });
 });

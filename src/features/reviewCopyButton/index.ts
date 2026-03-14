@@ -21,7 +21,12 @@ const startObserver = (): void => {
           if (node instanceof HTMLElement) {
             if (
               node.classList?.contains("review-comment") ||
-              node.querySelector?.(".review-comment")
+              node.classList?.contains("review-thread-component") ||
+              node.hasAttribute("data-testid") ||
+              node.querySelector?.(".review-comment") ||
+              node.querySelector?.(".review-thread-component") ||
+              node.querySelector?.('[data-testid="automated-review-comment"]') ||
+              node.querySelector?.(".js-comments-holder")
             ) {
               shouldProcess = true;
               break;

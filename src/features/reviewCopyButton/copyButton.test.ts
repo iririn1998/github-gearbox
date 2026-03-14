@@ -27,6 +27,7 @@ vi.mock("./icons/check.svg?raw", () => ({ default: "<svg data-testid='check'/>" 
 // DOM ヘルパー
 // ---------------------------------------------------------------------------
 
+/** 旧UIの .review-comment を作成する */
 function makeComment(withActions = true): HTMLElement {
   const comment = document.createElement("div");
   comment.className = "review-comment";
@@ -44,6 +45,41 @@ function makeComment(withActions = true): HTMLElement {
 
   document.body.appendChild(comment);
   return comment;
+}
+
+/** 新UIの automated-review-comment を作成する */
+function makeNewUIComment(withActions = true): HTMLElement {
+  const threadComponent = document.createElement("div");
+  threadComponent.className =
+    "review-thread-component js-comment-container js-resolvable-timeline-thread-container";
+
+  const commentsHolder = document.createElement("div");
+  commentsHolder.className = "js-comments-holder";
+
+  const commentDiv = document.createElement("div");
+  commentDiv.id = "discussion_r12345";
+  commentDiv.setAttribute("data-testid", "automated-review-comment");
+
+  if (withActions) {
+    const header = document.createElement("div");
+    header.setAttribute("data-testid", "comment-header");
+
+    const actionsContainer = document.createElement("div");
+    actionsContainer.className = "ActivityHeader-module__ActionsButtonsContainer__YAGtp";
+    header.appendChild(actionsContainer);
+
+    commentDiv.appendChild(header);
+  }
+
+  const body = document.createElement("div");
+  body.className = "markdown-body";
+  body.textContent = "new ui comment";
+  commentDiv.appendChild(body);
+
+  commentsHolder.appendChild(commentDiv);
+  threadComponent.appendChild(commentsHolder);
+  document.body.appendChild(threadComponent);
+  return commentDiv;
 }
 
 // ---------------------------------------------------------------------------
@@ -145,6 +181,22 @@ describe("addCopyButtonToComment", () => {
     expect(comment.querySelector(`.${COPY_BTN_CLASS}`)).toBeNull();
   });
 
+  it("新UIの ActionsButtonsContainer にボタンが挿入される", () => {
+    const comment = makeNewUIComment(true);
+    addCopyButtonToComment(comment);
+
+    const actionsContainer = comment.querySelector('[class*="ActionsButtonsContainer"]')!;
+    expect(actionsContainer.firstElementChild).not.toBeNull();
+    expect(actionsContainer.firstElementChild!.classList.contains(COPY_BTN_CLASS)).toBe(true);
+  });
+
+  it("新UIでアクションコンテナがない場合、ボタンは挿入されない", () => {
+    const comment = makeNewUIComment(false);
+    addCopyButtonToComment(comment);
+
+    expect(comment.querySelector(`.${COPY_BTN_CLASS}`)).toBeNull();
+  });
+
   it("処理済みマーク(PROCESSED_ATTR)が付与される", () => {
     const comment = makeComment();
     addCopyButtonToComment(comment);
@@ -187,9 +239,26 @@ describe("processAllReviewComments", () => {
   });
 
   it(".review-comment が 0 件の場合、何も起きない", () => {
-    // body は空
     expect(() => processAllReviewComments()).not.toThrow();
     expect(document.querySelectorAll(`.${COPY_BTN_CLASS}`)).toHaveLength(0);
+  });
+
+  it("新UIの [data-testid='automated-review-comment'] にもボタンが追加される", () => {
+    makeNewUIComment(true);
+    makeNewUIComment(true);
+
+    processAllReviewComments();
+
+    expect(document.querySelectorAll(`.${COPY_BTN_CLASS}`)).toHaveLength(2);
+  });
+
+  it("旧UIと新UIが混在していてもそれぞれにボタンが追加される", () => {
+    makeComment(true);
+    makeNewUIComment(true);
+
+    processAllReviewComments();
+
+    expect(document.querySelectorAll(`.${COPY_BTN_CLASS}`)).toHaveLength(2);
   });
 });
 

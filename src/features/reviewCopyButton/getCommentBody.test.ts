@@ -123,4 +123,18 @@ describe("getCommentBody", () => {
 
     expect(getCommentBody(comment)).toBe("trimmed");
   });
+
+  // ----- 新UI: automated-review-comment のテスト -----
+
+  it("新UIの .markdown-body からコメント本文を取得できる（.comment-body なし）", () => {
+    const comment = document.createElement("div");
+    comment.setAttribute("data-testid", "automated-review-comment");
+    const mb = document.createElement("div");
+    mb.className = "markdown-body";
+    mb.textContent = "New UI review comment text.";
+    comment.appendChild(mb);
+    document.body.appendChild(comment);
+
+    expect(getCommentBody(comment)).toBe("New UI review comment text.");
+  });
 });

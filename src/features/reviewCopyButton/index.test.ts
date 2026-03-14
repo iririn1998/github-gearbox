@@ -19,6 +19,7 @@ vi.mock("./icons/check.svg?raw", () => ({ default: "<svg data-testid='check'/>" 
 // DOM ヘルパー
 // ---------------------------------------------------------------------------
 
+/** 旧UIのレビューコメントを作成する */
 function buildComment(): HTMLElement {
   const comment = document.createElement("div");
   comment.className = "review-comment";
@@ -34,6 +35,37 @@ function buildComment(): HTMLElement {
 
   document.body.appendChild(comment);
   return comment;
+}
+
+/** 新UIのレビューコメントを作成する */
+function buildNewUIComment(): HTMLElement {
+  const threadComponent = document.createElement("div");
+  threadComponent.className =
+    "review-thread-component js-comment-container js-resolvable-timeline-thread-container";
+
+  const commentsHolder = document.createElement("div");
+  commentsHolder.className = "js-comments-holder";
+
+  const commentDiv = document.createElement("div");
+  commentDiv.id = "discussion_r99999";
+  commentDiv.setAttribute("data-testid", "automated-review-comment");
+
+  const header = document.createElement("div");
+  header.setAttribute("data-testid", "comment-header");
+  const actionsContainer = document.createElement("div");
+  actionsContainer.className = "ActivityHeader-module__ActionsButtonsContainer__YAGtp";
+  header.appendChild(actionsContainer);
+  commentDiv.appendChild(header);
+
+  const body = document.createElement("div");
+  body.className = "markdown-body";
+  body.textContent = "new ui test";
+  commentDiv.appendChild(body);
+
+  commentsHolder.appendChild(commentDiv);
+  threadComponent.appendChild(commentsHolder);
+  document.body.appendChild(threadComponent);
+  return commentDiv;
 }
 
 // ---------------------------------------------------------------------------
@@ -155,7 +187,6 @@ describe("MutationObserver による動的コメントへの対応", () => {
   it(".review-comment を含む親要素が追加された場合もボタンが挿入される", async () => {
     reviewCopyButtonFeature.init();
 
-    // 親要素ごと追加
     const parent = document.createElement("div");
     const comment = document.createElement("div");
     comment.className = "review-comment";
@@ -170,5 +201,15 @@ describe("MutationObserver による動的コメントへの対応", () => {
     await vi.waitFor(() => comment.querySelector(".gh-gearbox-copy-btn") !== null);
 
     expect(comment.querySelector(".gh-gearbox-copy-btn")).not.toBeNull();
+  });
+
+  it("新UIの review-thread-component が動的に追加された場合もボタンが挿入される", async () => {
+    reviewCopyButtonFeature.init();
+
+    const commentDiv = buildNewUIComment();
+
+    await vi.waitFor(() => commentDiv.querySelector(".gh-gearbox-copy-btn") !== null);
+
+    expect(commentDiv.querySelector(".gh-gearbox-copy-btn")).not.toBeNull();
   });
 });

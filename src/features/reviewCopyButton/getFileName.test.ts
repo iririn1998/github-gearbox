@@ -215,4 +215,43 @@ describe("getFileName", () => {
 
     expect(getFileName(comment)).toBe("priority/tagsearch.ts");
   });
+
+  // ----- 新UI: review-thread-component のテスト -----
+
+  it("新UIの review-thread-component 内の text-mono リンクからファイル名を返す", () => {
+    const comment = mountComment((c) => {
+      const thread = document.createElement("div");
+      thread.className = "review-thread-component";
+
+      const summary = document.createElement("summary");
+      const a = document.createElement("a");
+      a.className = "text-mono text-small Link--primary";
+      a.href = "/org/repo/pull/1/files/abc123#diff-xyz";
+      a.textContent = "src/components/NewFile.tsx";
+      summary.appendChild(a);
+      thread.appendChild(summary);
+
+      thread.appendChild(c);
+      return thread;
+    });
+
+    expect(getFileName(comment)).toBe("src/components/NewFile.tsx");
+  });
+
+  it("新UIで text-mono リンクがなくても /files リンクがあればファイル名を返す", () => {
+    const comment = mountComment((c) => {
+      const thread = document.createElement("div");
+      thread.className = "review-thread-component";
+
+      const a = document.createElement("a");
+      a.href = "/org/repo/pull/1/files";
+      a.textContent = "  src/fallback/file.ts  ";
+      thread.appendChild(a);
+
+      thread.appendChild(c);
+      return thread;
+    });
+
+    expect(getFileName(comment)).toBe("src/fallback/file.ts");
+  });
 });

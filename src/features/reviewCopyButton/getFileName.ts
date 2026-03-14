@@ -3,7 +3,8 @@
  *
  * GitHub の PR レビューコメントの DOM 構造:
  * - Files changed タブ: .file[data-tagsearch-path] > table > tr > td > ... > .review-comment
- * - Conversation タブ: コメントスレッド内にファイルリンクがある
+ * - Conversation タブ (旧): コメントスレッド内にファイルリンクがある
+ * - Conversation タブ (新): review-thread-component の summary 内にファイルリンクがある
  */
 export const getFileName = (commentElement: HTMLElement): string => {
   // 1. 祖先の .file 要素から data-tagsearch-path を取得（Files changed タブ）
@@ -28,11 +29,21 @@ export const getFileName = (commentElement: HTMLElement): string => {
   }
 
   // 4. Conversation タブ: コメントスレッドのヘッダーにあるファイルリンク
-  //    (.js-resolvable-timeline-thread-container 内の summary にファイル名リンクがある)
+  //    旧: .js-resolvable-timeline-thread-container
+  //    新: .review-thread-component (details > summary 内のリンク)
   const threadContainer = commentElement.closest<HTMLElement>(
-    ".js-resolvable-timeline-thread-container",
+    ".js-resolvable-timeline-thread-container, .review-thread-component",
   );
   if (threadContainer) {
+    // summary 内のファイルリンク（新UI: text-mono クラスの a タグ）
+    const monoLink = threadContainer.querySelector<HTMLAnchorElement>(
+      "summary a.text-mono[href*='/files']",
+    );
+    if (monoLink) {
+      return monoLink.textContent?.trim() ?? "";
+    }
+
+    // フォールバック: /files を含む任意のリンク
     const fileLink = threadContainer.querySelector<HTMLAnchorElement>("a[href*='/files']");
     if (fileLink) {
       return fileLink.textContent?.trim() ?? "";

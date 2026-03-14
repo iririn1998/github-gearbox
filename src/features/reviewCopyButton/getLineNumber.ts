@@ -2,17 +2,18 @@
  * レビューコメントから対象行番号を取得する
  *
  * GitHub の DOM 構造 (Conversation タブ):
- * - .js-resolvable-timeline-thread-container 内にコードスニペットの table がある
- * - table 内の td.blob-num[data-line-number] に行番号が格納されている
+ * - .js-resolvable-timeline-thread-container / .review-thread-component 内にコードスニペットの table がある
+ * - table 内の td.blob-num[data-line-number] / td[data-line-number] に行番号が格納されている
  * - 最初と最後の行番号を取得して範囲を返す (例: "L302-L305")
  *
  * GitHub の DOM 構造 (Files changed タブ):
  * - コメント行の直前の diff 行から行番号を取得
  */
 export const getLineNumber = (commentElement: HTMLElement): string => {
-  // コメントスレッドコンテナを取得
+  // コメントスレッドコンテナを取得（旧UI + 新UI）
   const threadContainer =
     commentElement.closest<HTMLElement>(".js-resolvable-timeline-thread-container") ??
+    commentElement.closest<HTMLElement>(".review-thread-component") ??
     commentElement.closest<HTMLElement>(".comment-holder");
 
   if (threadContainer) {
