@@ -8,15 +8,23 @@ import { vi } from "vitest";
 globalThis.chrome = {
   i18n: {
     getMessage: vi.fn((key: string, substitutions?: string | string[]) => {
-      if (substitutions) {
-        const subs = Array.isArray(substitutions) ? substitutions : [substitutions];
-        let result = key;
-        for (const sub of subs) {
-          result += `_${sub}`;
-        }
-        return result;
+      const template = key || "";
+      if (!template) {
+        return "";
       }
-      return key;
+
+      const subs =
+        substitutions === undefined
+          ? []
+          : Array.isArray(substitutions)
+            ? substitutions
+            : [substitutions];
+
+      return template.replace(/\$([1-9]\d*)/g, (_match, indexStr: string) => {
+        const index = Number(indexStr) - 1;
+        return index >= 0 && index < subs.length ? String(subs[index]) : "";
+      });
     }),
+    getUILanguage: vi.fn(() => "en"),
   },
 } as unknown as typeof chrome;
