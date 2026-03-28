@@ -10,7 +10,7 @@
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
-    console.log("[GitHub Gearbox] 拡張機能がインストールされました");
+    console.log(`[GitHub Gearbox] ${chrome.i18n.getMessage("extensionInstalled")}`);
 
     // デフォルト設定を保存
     chrome.storage.local.set({
