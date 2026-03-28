@@ -64,7 +64,7 @@ const stopObserver = (): void => {
  */
 export const taskListLabelFeature: Feature = {
   id: FEATURE_ID,
-  name: "タスクリスト Label 拡張",
+  name: chrome.i18n.getMessage("featureTaskListLabel"),
 
   init(): void {
     processAllTaskListItems();

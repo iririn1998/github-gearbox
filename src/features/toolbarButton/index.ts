@@ -34,7 +34,7 @@ const cleanup = (): void => {
  */
 export const toolbarButtonFeature: Feature = {
   id: FEATURE_ID,
-  name: "ツールバーボタン",
+  name: chrome.i18n.getMessage("featureToolbarButton"),
 
   init(): void {
     processAllToolbars();

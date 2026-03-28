@@ -97,7 +97,7 @@ export const createToolbarButton = (): { group: HTMLDivElement; button: HTMLButt
       closeDropdown(false); // 既にボタンにフォーカスがあるので戻し不要
     } else {
       button.setAttribute("aria-expanded", "true");
-      console.log("[GitHub Gearbox] ドロップダウンを開きました");
+      console.log(`[GitHub Gearbox] ${chrome.i18n.getMessage("dropdownOpened")}`);
       openDropdown(button);
     }
   });

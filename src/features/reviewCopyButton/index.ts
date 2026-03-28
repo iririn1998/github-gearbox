@@ -64,7 +64,7 @@ const cleanup = (): void => {
  */
 export const reviewCopyButtonFeature: Feature = {
   id: FEATURE_ID,
-  name: "レビューコメント コピー",
+  name: chrome.i18n.getMessage("featureReviewCopyButton"),
 
   init(): void {
     processAllReviewComments();

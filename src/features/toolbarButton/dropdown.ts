@@ -82,9 +82,9 @@ export const openDropdown = (anchor: HTMLElement): void => {
       closeDropdown(false);
       if (textarea) {
         insertTextAtCursor(textarea, item.text);
-        console.log(`[GitHub Gearbox] バッジを挿入しました: ${item.label}`);
+        console.log(`[GitHub Gearbox] ${chrome.i18n.getMessage("badgeInserted", [item.label])}`);
       } else {
-        console.warn("[GitHub Gearbox] 対応する textarea が見つかりませんでした");
+        console.warn(`[GitHub Gearbox] ${chrome.i18n.getMessage("textareaNotFound")}`);
       }
     });
 

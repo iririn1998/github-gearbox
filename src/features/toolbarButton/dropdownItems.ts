@@ -12,31 +12,31 @@ export type DropdownItem = {
  */
 export const DROPDOWN_ITEMS: readonly DropdownItem[] = [
   {
-    label: "ask  - 確認・質問",
+    label: chrome.i18n.getMessage("badgeLabelAsk"),
     text: "![ask-badge](https://img.shields.io/badge/review-ask-yellowgreen.svg)",
   },
   {
-    label: "must - 必須の修正",
+    label: chrome.i18n.getMessage("badgeLabelMust"),
     text: "![must-badge](https://img.shields.io/badge/review-must-red.svg)",
   },
   {
-    label: "imo  - 個人的意見",
+    label: chrome.i18n.getMessage("badgeLabelImo"),
     text: "![imo-badge](https://img.shields.io/badge/review-imo-orange.svg)",
   },
   {
-    label: "nits - 軽微な指摘",
+    label: chrome.i18n.getMessage("badgeLabelNits"),
     text: "![nits-badge](https://img.shields.io/badge/review-nits-green.svg)",
   },
   {
-    label: "next - 次回対応",
+    label: chrome.i18n.getMessage("badgeLabelNext"),
     text: "![next-badge](https://img.shields.io/badge/review-next-blueviolet)",
   },
   {
-    label: "memo - メモ",
+    label: chrome.i18n.getMessage("badgeLabelMemo"),
     text: "![memo-badge](https://img.shields.io/badge/review-memo-lightgrey)",
   },
   {
-    label: "good - 良いコード",
+    label: chrome.i18n.getMessage("badgeLabelGood"),
     text: "![good-badge](https://img.shields.io/badge/review-good-brightgreen.svg)",
   },
 ];
