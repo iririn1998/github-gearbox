@@ -27,7 +27,10 @@ const initAllFeatures = (): void => {
       activeFeatures.add(feature.id);
       console.log(`[GitHub Gearbox] ${chrome.i18n.getMessage("featureEnabled", [feature.name])}`);
     } catch (error) {
-      console.error(`[GitHub Gearbox] ${chrome.i18n.getMessage("featureInitFailed", [feature.name])}`, error);
+      console.error(
+        `[GitHub Gearbox] ${chrome.i18n.getMessage("featureInitFailed", [feature.name])}`,
+        error,
+      );
     }
   }
 };
@@ -42,7 +45,10 @@ const destroyAllFeatures = (): void => {
         feature.destroy();
         activeFeatures.delete(feature.id);
       } catch (error) {
-        console.error(`[GitHub Gearbox] ${chrome.i18n.getMessage("featureCleanupFailed", [feature.name])}`, error);
+        console.error(
+          `[GitHub Gearbox] ${chrome.i18n.getMessage("featureCleanupFailed", [feature.name])}`,
+          error,
+        );
       }
     }
   }
@@ -69,15 +75,23 @@ chrome.runtime.onMessage.addListener((message) => {
         activeFeatures.add(feature.id);
         console.log(`[GitHub Gearbox] ${chrome.i18n.getMessage("featureEnabled", [feature.name])}`);
       } catch (error) {
-        console.error(`[GitHub Gearbox] ${chrome.i18n.getMessage("featureEnableFailed", [feature.name])}`, error);
+        console.error(
+          `[GitHub Gearbox] ${chrome.i18n.getMessage("featureEnableFailed", [feature.name])}`,
+          error,
+        );
       }
     } else if (!message.enabled && activeFeatures.has(feature.id)) {
       try {
         feature.destroy();
         activeFeatures.delete(feature.id);
-        console.log(`[GitHub Gearbox] ${chrome.i18n.getMessage("featureDisabled", [feature.name])}`);
+        console.log(
+          `[GitHub Gearbox] ${chrome.i18n.getMessage("featureDisabled", [feature.name])}`,
+        );
       } catch (error) {
-        console.error(`[GitHub Gearbox] ${chrome.i18n.getMessage("featureDisableFailed", [feature.name])}`, error);
+        console.error(
+          `[GitHub Gearbox] ${chrome.i18n.getMessage("featureDisableFailed", [feature.name])}`,
+          error,
+        );
       }
     }
   }
