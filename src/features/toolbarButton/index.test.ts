@@ -50,8 +50,8 @@ describe("toolbarButtonFeature メタデータ", () => {
     expect(toolbarButtonFeature.id).toBe("toolbar-button");
   });
 
-  it("name が 'ツールバーボタン' である", () => {
-    expect(toolbarButtonFeature.name).toBe("ツールバーボタン");
+  it("name が chrome.i18n.getMessage で取得される", () => {
+    expect(toolbarButtonFeature.name).toBe("featureToolbarButton");
   });
 });
 

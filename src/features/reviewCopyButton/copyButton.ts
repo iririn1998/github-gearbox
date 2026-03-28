@@ -15,7 +15,7 @@ export const createCopyButton = (commentElement: HTMLElement): HTMLButtonElement
   const button = document.createElement("button");
   button.className = COPY_BTN_CLASS;
   button.type = "button";
-  button.title = "レビューコメントをコピー";
+  button.title = chrome.i18n.getMessage("copyReviewComment");
   button.innerHTML = clipboardIcon;
 
   button.addEventListener("click", async (e) => {
@@ -39,7 +39,7 @@ export const createCopyButton = (commentElement: HTMLElement): HTMLButtonElement
         button.classList.remove(COPY_BTN_SUCCESS_CLASS);
       }, SUCCESS_DURATION_MS);
     } catch (error) {
-      console.error("[GitHub Gearbox] クリップボードへのコピーに失敗しました:", error);
+      console.error(`[GitHub Gearbox] ${chrome.i18n.getMessage("clipboardCopyFailed")}`, error);
     }
   });
 

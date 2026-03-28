@@ -91,8 +91,8 @@ describe("reviewCopyButtonFeature メタデータ", () => {
     expect(reviewCopyButtonFeature.id).toBe("review-copy-button");
   });
 
-  it("name が 'レビューコメント コピー' である", () => {
-    expect(reviewCopyButtonFeature.name).toBe("レビューコメント コピー");
+  it("name が chrome.i18n.getMessage で取得される", () => {
+    expect(reviewCopyButtonFeature.name).toBe("featureReviewCopyButton");
   });
 });
 

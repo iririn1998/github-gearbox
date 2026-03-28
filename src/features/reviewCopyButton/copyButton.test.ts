@@ -150,10 +150,7 @@ describe("createCopyButton", () => {
     btn.click();
     await vi.waitFor(() => consoleSpy.mock.calls.length > 0);
 
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "[GitHub Gearbox] クリップボードへのコピーに失敗しました:",
-      error,
-    );
+    expect(consoleSpy).toHaveBeenCalledWith("[GitHub Gearbox] clipboardCopyFailed", error);
 
     // success クラスは付与されない
     expect(btn.classList.contains(COPY_BTN_SUCCESS_CLASS)).toBe(false);

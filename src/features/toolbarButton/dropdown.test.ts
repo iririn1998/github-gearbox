@@ -203,9 +203,7 @@ describe("openDropdown", () => {
     const firstItem = document.querySelector<HTMLButtonElement>(".gh-gearbox-dropdown__item");
     firstItem!.click();
 
-    expect(warnSpy).toHaveBeenCalledWith(
-      "[GitHub Gearbox] 対応する textarea が見つかりませんでした",
-    );
+    expect(warnSpy).toHaveBeenCalledWith("[GitHub Gearbox] textareaNotFound");
   });
 
   // --- キーボードナビゲーション ---

@@ -1,0 +1,125 @@
+{
+  "extensionName": {
+    "message": "GitHub Gearbox"
+  },
+  "extensionDescription": {
+    "message": "Productivity tools for GitHub. Expand task list click areas and more."
+  },
+
+  "featureTaskListLabel": {
+    "message": "Task List Label Extension"
+  },
+  "featureTaskListLabelDesc": {
+    "message": "Makes text next to checkboxes clickable to toggle them"
+  },
+
+  "featureReviewCopyButton": {
+    "message": "Review Comment Copy"
+  },
+  "featureReviewCopyButtonDesc": {
+    "message": "Copy PR review comment file name, line number, and content with one click"
+  },
+
+  "featureToolbarButton": {
+    "message": "Toolbar Button"
+  },
+  "featureToolbarButtonDesc": {
+    "message": "Add custom buttons to the PR comment toolbar"
+  },
+
+  "copyReviewComment": {
+    "message": "Copy review comment"
+  },
+  "clipboardCopyFailed": {
+    "message": "Failed to copy to clipboard:"
+  },
+
+  "extensionInstalled": {
+    "message": "Extension has been installed"
+  },
+  "featureEnabled": {
+    "message": "$FEATURE_NAME$ has been enabled",
+    "placeholders": {
+      "FEATURE_NAME": {
+        "content": "$1"
+      }
+    }
+  },
+  "featureInitFailed": {
+    "message": "Failed to initialize $FEATURE_NAME$:",
+    "placeholders": {
+      "FEATURE_NAME": {
+        "content": "$1"
+      }
+    }
+  },
+  "featureDisabled": {
+    "message": "$FEATURE_NAME$ has been disabled",
+    "placeholders": {
+      "FEATURE_NAME": {
+        "content": "$1"
+      }
+    }
+  },
+  "featureEnableFailed": {
+    "message": "Failed to enable $FEATURE_NAME$:",
+    "placeholders": {
+      "FEATURE_NAME": {
+        "content": "$1"
+      }
+    }
+  },
+  "featureDisableFailed": {
+    "message": "Failed to disable $FEATURE_NAME$:",
+    "placeholders": {
+      "FEATURE_NAME": {
+        "content": "$1"
+      }
+    }
+  },
+  "featureCleanupFailed": {
+    "message": "Failed to cleanup $FEATURE_NAME$:",
+    "placeholders": {
+      "FEATURE_NAME": {
+        "content": "$1"
+      }
+    }
+  },
+
+  "dropdownOpened": {
+    "message": "Dropdown opened"
+  },
+  "badgeInserted": {
+    "message": "Badge inserted: $LABEL$",
+    "placeholders": {
+      "LABEL": {
+        "content": "$1"
+      }
+    }
+  },
+  "textareaNotFound": {
+    "message": "Corresponding textarea not found"
+  },
+
+  "badgeLabelAsk": {
+    "message": "ask  - Question"
+  },
+  "badgeLabelMust": {
+    "message": "must - Required fix"
+  },
+  "badgeLabelImo": {
+    "message": "imo  - Personal opinion"
+  },
+  "badgeLabelNits": {
+    "message": "nits - Minor issue"
+  },
+  "badgeLabelNext": {
+    "message": "next - Next time"
+  },
+  "badgeLabelMemo": {
+    "message": "memo - Memo"
+  },
+  "badgeLabelGood": {
+    "message": "good - Good code"
+  }
+}
