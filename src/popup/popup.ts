@@ -11,6 +11,19 @@ type FeatureSettings = {
 };
 
 /**
+ * data-i18n 属性を持つ要素に chrome.i18n のメッセージを注入する
+ */
+const applyI18n = (): void => {
+  const elements = document.querySelectorAll<HTMLElement>("[data-i18n]");
+  for (const el of elements) {
+    const messageKey = el.getAttribute("data-i18n");
+    if (messageKey) {
+      el.textContent = chrome.i18n.getMessage(messageKey);
+    }
+  }
+};
+
+/**
  * 個別の機能トグルを設定する共通ヘルパー
  */
 const setupFeatureToggle = (
@@ -44,6 +57,9 @@ const setupFeatureToggle = (
 };
 
 const init = async (): Promise<void> => {
+  // i18nメッセージを注入
+  applyI18n();
+
   // 保存された設定を読み込み
   const result = await chrome.storage.local.get("features");
   const features: FeatureSettings = (result.features as FeatureSettings) ?? {
