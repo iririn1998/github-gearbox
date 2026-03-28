@@ -64,8 +64,8 @@ describe("taskListLabelFeature メタデータ", () => {
     expect(taskListLabelFeature.id).toBe("task-list-label");
   });
 
-  it("name が 'タスクリスト Label 拡張' である", () => {
-    expect(taskListLabelFeature.name).toBe("タスクリスト Label 拡張");
+  it("name が chrome.i18n.getMessage で取得される", () => {
+    expect(taskListLabelFeature.name).toBe("featureTaskListLabel");
   });
 });
 

@@ -151,7 +151,7 @@ describe("createCopyButton", () => {
     await vi.waitFor(() => consoleSpy.mock.calls.length > 0);
 
     expect(consoleSpy).toHaveBeenCalledWith(
-      "[GitHub Gearbox] クリップボードへのコピーに失敗しました:",
+      "[GitHub Gearbox] clipboardCopyFailed",
       error,
     );
 

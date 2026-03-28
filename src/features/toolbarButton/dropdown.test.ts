@@ -204,7 +204,7 @@ describe("openDropdown", () => {
     firstItem!.click();
 
     expect(warnSpy).toHaveBeenCalledWith(
-      "[GitHub Gearbox] 対応する textarea が見つかりませんでした",
+      "[GitHub Gearbox] textareaNotFound",
     );
   });
 
