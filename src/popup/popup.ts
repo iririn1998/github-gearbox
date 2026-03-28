@@ -18,7 +18,14 @@ const applyI18n = (): void => {
   for (const el of elements) {
     const messageKey = el.getAttribute("data-i18n");
     if (messageKey) {
-      el.textContent = chrome.i18n.getMessage(messageKey);
+      const originalText = el.textContent;
+      const message = chrome.i18n.getMessage(messageKey);
+      if (message) {
+        el.textContent = message;
+      } else {
+        console.warn(`[i18n] Missing or empty message for key "${messageKey}" on element:`, el);
+        el.textContent = originalText || messageKey;
+      }
     }
   }
 };
@@ -57,8 +64,9 @@ const setupFeatureToggle = (
 };
 
 const init = async (): Promise<void> => {
-  // i18nメッセージを注入
+  // i18nメッセージを注入し、html要素のlang属性を動的に設定
   applyI18n();
+  document.documentElement.lang = chrome.i18n.getUILanguage();
 
   // 保存された設定を読み込み
   const result = await chrome.storage.local.get("features");
